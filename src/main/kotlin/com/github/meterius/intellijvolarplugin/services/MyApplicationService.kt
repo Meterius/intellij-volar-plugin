@@ -1,6 +1,6 @@
-package org.jetbrains.plugins.template.services
+package com.github.meterius.intellijvolarplugin.services
 
-import org.jetbrains.plugins.template.MyBundle
+import com.github.meterius.intellijvolarplugin.MyBundle
 
 class MyApplicationService {
 
