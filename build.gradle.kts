@@ -24,6 +24,11 @@ version = properties("pluginVersion")
 // Configure project's dependencies
 repositories {
     mavenCentral()
+    maven { url = uri("https://jitpack.io") }
+}
+
+dependencies {
+    implementation("com.github.ballerina-platform:lsp4intellij:0.95.0")
 }
 
 // Set the JVM language level used to build project. Use Java 11 for 2020.3+, and Java 17 for 2022.2+.
@@ -39,12 +44,6 @@ intellij {
 
     // Plugin Dependencies. Uses `platformPlugins` property from the gradle.properties file.
     plugins.set(properties("platformPlugins").split(',').map(String::trim).filter(String::isNotEmpty))
-}
-
-// Configure Gradle Changelog Plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin
-changelog {
-    groups.set(emptyList())
-    repositoryUrl.set(properties("pluginRepositoryUrl"))
 }
 
 // Configure Gradle Qodana Plugin - read more: https://github.com/JetBrains/gradle-qodana-plugin
@@ -69,29 +68,6 @@ tasks {
         version.set(properties("pluginVersion"))
         sinceBuild.set(properties("pluginSinceBuild"))
         untilBuild.set(properties("pluginUntilBuild"))
-
-        // Extract the <!-- Plugin description --> section from README.md and provide for the plugin's manifest
-        pluginDescription.set(
-            file("README.md").readText().lines().run {
-                val start = "<!-- Plugin description -->"
-                val end = "<!-- Plugin description end -->"
-
-                if (!containsAll(listOf(start, end))) {
-                    throw GradleException("Plugin description section not found in README.md:\n$start ... $end")
-                }
-                subList(indexOf(start) + 1, indexOf(end))
-            }.joinToString("\n").let { markdownToHTML(it) }
-        )
-
-        // Get the latest available change notes from the changelog file
-        changeNotes.set(provider {
-            with(changelog) {
-                renderItem(
-                    getOrNull(properties("pluginVersion")) ?: getLatest(),
-                    Changelog.OutputType.HTML,
-                )
-            }
-        })
     }
 
     // Configure UI tests plugin
